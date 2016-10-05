@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">云笔记</string>
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+
+    <string name="please_enter_title">请输入标题</string>
+    <string name="notes">笔记</string>
+    <string name="listview_editor">编辑</string>
+    <string name="please_login">请登录</string>
+    <string name="settings">设置</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="menu_item_finish">完成</string>
+    <string name="dialog_message">你确定要删除吗?</string>
+    <string name="dialog_sure">确定</string>
+    <string name="dialog_cancel">取消</string>
+    <string name="dialog_tip">提示</string>
+    <string name="btn_log_out">注销</string>
+    <string name="note_status_is_sync">已同步</string>
+    <string name="note_status_not_sync">未同步</string>
+    <string name="dialog_message_login">正在登录，请稍后...</string>
+    <string name="dialog_message_register">正在注册，请稍后...</string>
+    <string name="info_show_media_failed">有图片/视频未能显示</string>
+    <string name="info_sync_succeed">同步成功</string>
+    <string name="toast_info_network_unavaliable">网络不可用</string>
+
+
+</resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3287F3</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorGreen">#74CB55</color>
+    <color name="colorLightGreen">#74CA00</color>
+    <color name="colorBackground">#E6E6E8</color>
+    <color name="colorGray">#A7ACC7</color>
+    <color name="colorLightGray">#A7ACD8</color>
+    <color name="colorTabBackground">#F5F5F7</color>
+    <color name="colorTabTitleTextSelected">#398DEE</color>
+    <color name="colorTabTitleTextNormal">#838A94</color>
+    <color name="colorFABNor">#21CD6F</color>
+    <color name="colorFABSel">#3287F3</color>
+    <color name="colorAlphaToolBar">#5898E9</color>
+    <color name="listview_color">#EEEEEE</color>
+
+
+</resources>
