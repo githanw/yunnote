@@ -6,8 +6,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import cn.githan.yunnote.MyApplication;
 import cn.githan.yunnote.Controllers.MySQLiteOpenHelper;
@@ -104,7 +110,16 @@ public class NoteSyncManager {
                     object.put(MySQLiteOpenHelper.SQL_NOTE_TIME, note.getnTime());
                     object.put(MySQLiteOpenHelper.SQL_NOTE_SYNC, 1);
                     object.put(Constant.SP_USERNAME, username);
+
+                    // TODO: 2016/10/6 获取content 的内容,分析出media文件名，取出二进制文件，放进json中
+                    JSONArray mediaArray = convertMediaDataToJsonArray(note.getnContent());
+                    if (mediaArray.length() > 0) {
+                        object.put("media", mediaArray);
+                        MyLog.log("Media json content : " + mediaArray.toString());
+                    }
+
                     array.put(i, object);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -136,8 +151,87 @@ public class NoteSyncManager {
         } else {
             MyLog.log("table queue is empty.");
         }
+    }
 
+    /**
+     * convert media data which from note content to json array
+     * @param content note content
+     * @return json array
+     */
+    private JSONArray convertMediaDataToJsonArray(String content) {
+        List<File> mediaFiles = getFileObjects(getMediaResources(content));
+        JSONArray mediaArray = new JSONArray();
+        for (int j = 0; j < mediaFiles.size(); j++) {
+            File file = mediaFiles.get(j);
+            byte[] bytes = readFile(file);
+            if (bytes != null) {
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put(file.getName(), bytes);
+                    mediaArray.put(j, jsonObject);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return mediaArray;
+    }
 
+    /**
+     * find media uri from note content by regex
+     * @param content note content
+     * @return list of media uri
+     */
+    public List<String> getMediaResources(String content) {
+        List<String> resourceStrs = new ArrayList<>();
+        String regex = "/(storage|mnt)/.{0,15}/Android/data/cn\\.githan\\.yunnote/files/media/.{0,25}\\.(jpg|mp4)";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(content);
+        while (m.find()) {
+            String resourcePath = m.group();
+            resourceStrs.add(resourcePath);
+        }
+
+        return resourceStrs;
+    }
+
+    /**
+     * get file objects from list of media uri
+     * @param resourceStrs media paths
+     * @return file objects
+     */
+    public List<File> getFileObjects(List<String> resourceStrs) {
+        List<File> files = new ArrayList<>();
+        for (int i = 0; i < resourceStrs.size(); i++) {
+            String filePath = resourceStrs.get(i);
+            File file = new File(filePath);
+            if (file.exists()) {
+                files.add(file);
+            }
+        }
+        return files;
+    }
+
+    /**
+     * read file as byte[]
+     * @param file file
+     * @return byte[] of file
+     */
+    public byte[] readFile(File file) {
+        if (file.exists()) {
+            byte[] buff = new byte[(int) file.length()];
+            try {
+                FileInputStream fis = new FileInputStream(file);
+                fis.read(buff);
+                fis.close();
+                return buff;
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
     /**
@@ -219,7 +313,7 @@ public class NoteSyncManager {
             sqLiteManager.addNote(serverExtractNotes);
             onSyncSucceedListener.onNoteSyncSucceed(SYNC_SUCCEED);
 
-        }else {
+        } else {
             //Compare result is equal. Sync done.
             onSyncSucceedListener.onNoteSyncSucceed(SYNC_SUCCEED);
         }
