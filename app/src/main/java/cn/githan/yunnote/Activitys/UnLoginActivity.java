@@ -12,13 +12,12 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import cn.githan.yunnote.Managers.UserManager;
 import cn.githan.yunnote.Constants.Constant;
+import cn.githan.yunnote.Managers.UserManager;
 import cn.githan.yunnote.R;
 import cn.githan.yunnote.Utils.MyLog;
 import cn.githan.yunnote.Utils.MyToast;
@@ -47,7 +46,7 @@ public class UnLoginActivity extends BaseActivity implements View.OnClickListene
         /*
         check network
          */
-        if (!MyUtils.isNetworkAvaliable(this)){
+        if (!MyUtils.isNetworkAvaliable(this)) {
             MyToast.show(this, getString(R.string.toast_info_network_unavaliable));
         }
     }

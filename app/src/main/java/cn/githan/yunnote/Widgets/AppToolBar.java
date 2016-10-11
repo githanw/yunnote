@@ -57,6 +57,7 @@ public class AppToolBar {
 
     /**
      * set toolbar title
+     *
      * @param str string of title
      */
     public void setTitle(String str) {
@@ -65,6 +66,7 @@ public class AppToolBar {
 
     /**
      * set toolbar title
+     *
      * @param resId resId of title
      */
     public void setTitle(int resId) {
@@ -73,6 +75,7 @@ public class AppToolBar {
 
     /**
      * get toolbar title text
+     *
      * @return string of title
      */
     public String getTitle() {
@@ -81,6 +84,7 @@ public class AppToolBar {
 
     /**
      * display refresh button or not
+     *
      * @param b boolean
      */
     public void setDisplayRefreshButton(boolean b) {
@@ -93,6 +97,7 @@ public class AppToolBar {
 
     /**
      * set refresh button on click listener
+     *
      * @param listener view.onclicklistener
      */
     public void setOnClickRefreshButtonListener(View.OnClickListener listener) {
@@ -102,20 +107,22 @@ public class AppToolBar {
 
     /**
      * set editor button display or not
+     *
      * @param b boolean
      */
     public void setDisplayEditorButton(boolean b) {
         if (editorButton != null) {
             if (b) {
-                    editorButton.setVisible(true);
-            }else {
-                    editorButton.setVisible(false);
+                editorButton.setVisible(true);
+            } else {
+                editorButton.setVisible(false);
             }
         }
     }
 
     /**
      * set editor button on click listener
+     *
      * @param listener view.onclicklistener
      */
     public void setOnClickEditorButtonListener(Toolbar.OnMenuItemClickListener listener) {
@@ -131,6 +138,7 @@ public class AppToolBar {
 
     /**
      * get navigation icon resId
+     *
      * @return icon resId
      */
     public int getNavigationIcon() {
@@ -157,6 +165,7 @@ public class AppToolBar {
 
     /**
      * display finish button or not
+     *
      * @param b
      */
     public void setDisplayFinishButton(boolean b) {
@@ -169,6 +178,7 @@ public class AppToolBar {
 
     /**
      * set finish button onclick listener
+     *
      * @param listener view.onclicklistener
      */
     public void setOnClickFinishButtonListener(View.OnClickListener listener) {

@@ -8,16 +8,14 @@ import cn.githan.yunnote.Constants.Constant;
 
 /**
  * Created by BW on 16/8/22.
- *
+ * <p/>
  * 两个数据表的作用：
  * 1，note：客户端本地保存笔记信息
  * 2，queue：记录客户端本地对note的CUD操作，同步时发送到服务器进行服务端更新，数据每次成功同步后会清空
- *
  */
 public class MySQLiteOpenHelper extends SQLiteOpenHelper {
 
     public static final String NOTE = "note";
-    //    public static final String SQL_NOTE_ID = "id";
     public static final String SQL_NOTE_ID = "nid";
     public static final String SQL_NOTE_TITLE = "ntitle";
     public static final String SQL_NOTE_CONTENT = "ncontent";

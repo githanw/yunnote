@@ -1,7 +1,6 @@
 package cn.githan.yunnote.Utils;
 
 import android.content.Context;
-import android.content.SyncStatusObserver;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
@@ -15,9 +14,10 @@ import java.util.Random;
 public class MyUtils {
     /**
      * get formatted of current system time
+     *
      * @return string of time
      */
-    public static String getSystemTime(){
+    public static String getSystemTime() {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date(System.currentTimeMillis());
         return format.format(date);
@@ -25,22 +25,35 @@ public class MyUtils {
 
     /**
      * get random number of note'id
+     *
      * @return int of number
      */
-    public static int getRandomNumber(){
+    public static int getRandomNumber() {
         Random random = new Random(System.currentTimeMillis());
         int num = Math.abs(random.nextInt());
         MyLog.log(String.valueOf(num));
         return num;
     }
 
-    public static boolean isNetworkAvaliable(Context context){
-        if (isMobileNetworkConneted(context)||isWifiConnected(context)){
+    /**
+     * check network
+     *
+     * @param context context
+     * @return boolean
+     */
+    public static boolean isNetworkAvaliable(Context context) {
+        if (isMobileNetworkConneted(context) || isWifiConnected(context)) {
             return true;
         }
         return false;
     }
 
+    /**
+     * check GPRS
+     *
+     * @param paramContext context
+     * @return boolean
+     */
     public static boolean isMobileNetworkConneted(Context paramContext) {
         boolean b = false;
         if (paramContext != null) {
@@ -52,6 +65,12 @@ public class MyUtils {
         return b;
     }
 
+    /**
+     * check wifi
+     *
+     * @param paramContext context
+     * @return boolean
+     */
     public static boolean isWifiConnected(Context paramContext) {
         boolean b = false;
         NetworkInfo localNetworkInfo = ((ConnectivityManager) paramContext.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();

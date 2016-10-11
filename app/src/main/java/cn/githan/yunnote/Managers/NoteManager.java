@@ -5,8 +5,8 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.githan.yunnote.MyApplication;
 import cn.githan.yunnote.Models.Note;
+import cn.githan.yunnote.MyApplication;
 
 /**
  * Created by BW on 16/8/22.
@@ -19,18 +19,19 @@ public class NoteManager {
     private SQLiteManager sqLiteManager;
 
     public NoteManager(Context context) {
-        if (noteList ==null){
+        if (noteList == null) {
             noteList = new ArrayList<>();
         }
-        sqLiteManager = ((MyApplication)context).getSqLiteManager();
+        sqLiteManager = ((MyApplication) context).getSqLiteManager();
         refreshNoteList();
     }
 
     /**
      * add note
+     *
      * @param note which to be added
      */
-    public void addNote(Note note){
+    public void addNote(Note note) {
         sqLiteManager.addNote(note);
         refreshNoteList();
     }
@@ -39,16 +40,17 @@ public class NoteManager {
      * delete notes
      * switch notes which checkbox is checked & delete;
      */
-    public void deleteNote(){
+    public void deleteNote() {
         sqLiteManager.deleteNote(getNoteList());
         refreshNoteList();
     }
 
     /**
      * modify note
+     *
      * @param note which to be modified
      */
-    public void modifyNote(Note note){
+    public void modifyNote(Note note) {
         sqLiteManager.updateNote(note);
         refreshNoteList();
     }
@@ -64,14 +66,14 @@ public class NoteManager {
     /**
      * refresh note list
      */
-    public void refreshNoteList(){
+    public void refreshNoteList() {
         setNoteList(sqLiteManager.queryNote());
     }
 
     /**
      * restore checkbox status of notelist
      */
-    public void restoreNoteCheckStatus(){
+    public void restoreNoteCheckStatus() {
         for (int i = 0; i < noteList.size(); i++) {
             noteList.get(i).setChecked(false);
         }

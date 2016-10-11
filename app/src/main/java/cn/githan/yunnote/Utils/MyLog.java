@@ -1,10 +1,6 @@
 package cn.githan.yunnote.Utils;
 
-import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
-
-import java.util.Random;
 
 /**
  * Created by BW on 16/8/13.
@@ -16,15 +12,14 @@ public class MyLog {
 
     /**
      * show log
+     *
      * @param string string of log
      */
-    public static void log(String string){
-        if (showLog){
-            Log.d(TAG,string);
+    public static void log(String string) {
+        if (showLog) {
+            Log.d(TAG, string);
         }
     }
-
-
 
 
 }

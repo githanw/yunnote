@@ -58,9 +58,10 @@ public class SQLiteManager {
 
     /**
      * insert data to database
-     * @param table table name
+     *
+     * @param table          table name
      * @param nullColumnHack nullColumnHack
-     * @param values values
+     * @param values         values
      */
     public void insert(String table, String nullColumnHack, ContentValues values) {
         db.insert(table, nullColumnHack, values);
@@ -68,6 +69,7 @@ public class SQLiteManager {
 
     /**
      * query data from database
+     *
      * @param table table name
      * @return Cursor
      */
@@ -78,10 +80,11 @@ public class SQLiteManager {
 
     /**
      * update data to database
-     * @param table table name
-     * @param values values
+     *
+     * @param table       table name
+     * @param values      values
      * @param whereClause where clause
-     * @param whereArgs where args
+     * @param whereArgs   where args
      */
     public void update(String table, ContentValues values, String whereClause, String[] whereArgs) {
         db.update(table, values, whereClause, whereArgs);
@@ -89,9 +92,10 @@ public class SQLiteManager {
 
     /**
      * delete data from database
-     * @param table table name
+     *
+     * @param table       table name
      * @param whereClause where clause
-     * @param whereArgs where args
+     * @param whereArgs   where args
      */
     public void delete(String table, String whereClause, String[] whereArgs) {
         db.delete(table, whereClause, whereArgs);
@@ -99,6 +103,7 @@ public class SQLiteManager {
 
     /**
      * put ContentValues to variable 'values'
+     *
      * @param note note
      * @return ContentValues
      */
@@ -114,6 +119,7 @@ public class SQLiteManager {
 
     /**
      * add note to table note
+     *
      * @param note which note to be added
      */
     public void addNote(Note note) {
@@ -122,25 +128,27 @@ public class SQLiteManager {
         insert(MySQLiteOpenHelper.NOTE, null, values);
         insertToQueue(MySQLiteOpenHelper.QUEUE_REQUEST_TYPE_ADD, values);
         closeDatabase();
-        MyLog.log("Note added. nid: " + values.getAsString(MySQLiteOpenHelper.SQL_NOTE_ID));
+        MyLog.log("SQLiteManager: Note added. nid: " + values.getAsString(MySQLiteOpenHelper.SQL_NOTE_ID));
     }
 
     /**
      * add new notes to table note
+     *
      * @param notes list of notes to be added
      */
-    public void addNote(List<Note> notes){
+    public void addNote(List<Note> notes) {
         openDatabase();
         for (int i = 0; i < notes.size(); i++) {
             values = putValues(notes.get(i));
-            insert(MySQLiteOpenHelper.NOTE,null,values);
-            MyLog.log("Note added. nid: " + values.getAsString(MySQLiteOpenHelper.SQL_NOTE_ID));
+            insert(MySQLiteOpenHelper.NOTE, null, values);
+            MyLog.log("SQLiteManager: Note added. nid: " + values.getAsString(MySQLiteOpenHelper.SQL_NOTE_ID));
         }
         closeDatabase();
     }
 
     /**
      * update table note
+     *
      * @param note which to be updated
      */
     public void updateNote(Note note) {
@@ -151,11 +159,12 @@ public class SQLiteManager {
         update(MySQLiteOpenHelper.NOTE, values, Clause, str);
         insertToQueue(MySQLiteOpenHelper.QUEUE_REQUEST_TYPE_UPDATE, values);
         closeDatabase();
-        MyLog.log("Note updated. nid: " + values.getAsString(MySQLiteOpenHelper.SQL_NOTE_ID));
+        MyLog.log("SQLiteManager: Note updated. nid: " + values.getAsString(MySQLiteOpenHelper.SQL_NOTE_ID));
     }
 
     /**
      * delete list of notes
+     *
      * @param notes which to be deleted
      */
     public void deleteNote(List<Note> notes) {
@@ -167,7 +176,7 @@ public class SQLiteManager {
                 values = putValues(notes.get(i));
                 delete(MySQLiteOpenHelper.NOTE, clause, str);
                 insertToQueue(MySQLiteOpenHelper.QUEUE_REQUEST_TYPE_DEL, values);
-                MyLog.log("Note deleted. nid: " + values.getAsString(MySQLiteOpenHelper.SQL_NOTE_ID));
+                MyLog.log("SQLiteManager: Note deleted. nid: " + values.getAsString(MySQLiteOpenHelper.SQL_NOTE_ID));
             }
         }
         closeDatabase();
@@ -175,6 +184,7 @@ public class SQLiteManager {
 
     /**
      * query table note
+     *
      * @return list of notes
      */
     public List<Note> queryNote() {
@@ -195,7 +205,6 @@ public class SQLiteManager {
                 noteList.add(note);
             } while (c.moveToNext());
         }
-        MyLog.log("note query.");
         c.close();
         closeDatabase();
         return noteList;
@@ -208,9 +217,10 @@ public class SQLiteManager {
 
     /**
      * insert list of note into table queue
+     *
      * @param notes list of notes
      */
-    public void insertToQueue(List<Note> notes){
+    public void insertToQueue(List<Note> notes) {
         clearValues();
         openDatabase();
         for (int i = 0; i < notes.size(); i++) {
@@ -220,13 +230,14 @@ public class SQLiteManager {
             values.put(MySQLiteOpenHelper.SQL_NOTE_TIME, notes.get(i).getnTime());
             values.put(MySQLiteOpenHelper.SQL_NOTE_SYNC, notes.get(i).getnSync());
             values.put(MySQLiteOpenHelper.QUEUE_REQUEST_TYPE, MySQLiteOpenHelper.QUEUE_REQUEST_TYPE_ADD);
-            insert(MySQLiteOpenHelper.QUEUE,null,values);
+            insert(MySQLiteOpenHelper.QUEUE, null, values);
         }
         closeDatabase();
     }
 
     /**
      * query table queue
+     *
      * @return List of notes
      */
     public List<Note> queryQueue() {
@@ -271,16 +282,17 @@ public class SQLiteManager {
 
     /**
      * change table column of note: 'nsync' to 1(means Synced)
+     *
      * @param notes which to change
      */
     public void changeNoteSyncStatus(List<Note> notes) {
         openDatabase();
         clearValues();
-        String clause = MySQLiteOpenHelper.SQL_NOTE_ID+"=?";
+        String clause = MySQLiteOpenHelper.SQL_NOTE_ID + "=?";
         for (int i = 0; i < notes.size(); i++) {
             String nId = String.valueOf(notes.get(i).getnId());
-            values.put(MySQLiteOpenHelper.SQL_NOTE_SYNC,1);
-            update(MySQLiteOpenHelper.NOTE,values,clause,new String[]{nId});
+            values.put(MySQLiteOpenHelper.SQL_NOTE_SYNC, 1);
+            update(MySQLiteOpenHelper.NOTE, values, clause, new String[]{nId});
         }
         closeDatabase();
     }

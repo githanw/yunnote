@@ -17,18 +17,14 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.Spanned;
-import android.util.Log;
-import android.view.Display;
 import android.view.WindowManager;
 import android.widget.EditText;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,7 +36,6 @@ import cn.githan.yunnote.Utils.MyUtils;
 import cn.githan.yunnote.Widgets.MyImageSpan;
 import cn.githan.yunnote.Widgets.SuperEditText;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 import static cn.githan.yunnote.Widgets.SuperEditText.IMAGE_CAPTURE;
 import static cn.githan.yunnote.Widgets.SuperEditText.IMAGE_SELECTOR;
 import static cn.githan.yunnote.Widgets.SuperEditText.VIDEO_CAPTURE;
@@ -55,21 +50,23 @@ public class EditTextManager {
     private String mediaRootPath;
     private static final String FILE_TAG = "FFFF";
     private EditText editText;
-    private int bitmapWidth, bitmapHeight;
+    private int etWidth, etHeight;
+    private OnMediaTouchListener onMediaTouchListener;
 
     /*
     media文件格式：
-    noteId%%randomId.jpg
-    noteId%%randomId.mp4
+    noteIdFFFFrandomId.jpg
+    noteIdFFFFrandomId.mp4
      */
 
     public EditTextManager(Context context, EditText editText) {
         this.context = context;
         this.editText = editText;
+        /*
+        get media root path
+         */
         mediaRootPath = context.getExternalFilesDir("media").toString();
-        MyLog.log("mediaRootPath is : " + mediaRootPath);
     }
-
 
     /**
      * 将Uri解析成文件路径
@@ -91,19 +88,16 @@ public class EditTextManager {
                             filePath = getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selection);
                             MyLog.log("media path = " + filePath);
                             return filePath;
-
                         } else if ("com.android.providers.downloads.documents".equals(uri.getAuthority())) {
                             Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(docId));
                             filePath = getImagePath(contentUri, null);
                             MyLog.log("media path = " + filePath);
                             return filePath;
-
                         }
                     } else if ("content".equalsIgnoreCase(uri.getScheme())) {
                         filePath = getImagePath(uri, null);
                         MyLog.log("media path = " + filePath);
                         return filePath;
-
                     }
                 } else {
                     filePath = getImagePath(uri, null);
@@ -128,6 +122,13 @@ public class EditTextManager {
         return filePath;
     }
 
+    /**
+     * 从文件路径中获取Bitmap
+     *
+     * @param filePath bitmap file path
+     * @param type     flag
+     * @return bitmap
+     */
     public Bitmap getBitmapFromFilePath(String filePath, int type) {
         Bitmap bitmap = null;
         switch (type) {
@@ -178,9 +179,9 @@ public class EditTextManager {
     /**
      * create bitmap which has water_mark
      *
-     * @param src
-     * @param watermark
-     * @return
+     * @param src       bitmap resource
+     * @param watermark watermark
+     * @return bitmap with watermark
      */
     public Bitmap createBitmap(Bitmap src, Bitmap watermark) {
         if (src == null) {
@@ -233,27 +234,16 @@ public class EditTextManager {
          /*
         resize image's size;
         */
-
-        Display display = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            display = editText.getDisplay();
-        }
-        int width = display.getWidth();
+        int width = getEtWidth();
         int height = b.getHeight();
-        if (height>display.getHeight()){
-            height = display.getHeight();
+        if (height > getEtHeight()) {
+            height = getEtHeight();
         }
-//        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-//        int width = wm.getDefaultDisplay().getWidth() - 50;
-//        int height = b.getHeight();
-//        if (height > wm.getDefaultDisplay().getHeight()) {
-//            height = wm.getDefaultDisplay().getHeight();
-//        }
+
         b = ThumbnailUtils.extractThumbnail(b, width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
-        MyLog.log("Bitmap resize : w->"+b.getWidth()+" h->"+b.getHeight());
+        MyLog.log("Bitmap resize : w->" + b.getWidth() + " h->" + b.getHeight());
         return b;
     }
-
 
     /**
      * create new Image file
@@ -279,13 +269,13 @@ public class EditTextManager {
 
 
     /**
-     * 插入图片
+     * insert Image
      *
-     * @param uri 图片资源的uri
+     * @param uri image uri
      */
     public void insertFromImageSelector(EditText et, Uri uri, int noteId) {
         /*
-        1，解析uri得到bitmap，
+        1，从uri中解析出bitmap
         2，然后将bitmap输出到app制定目录
         3，从制定目录重新解析出bitmap；
          */
@@ -358,7 +348,9 @@ public class EditTextManager {
         et.setMovementMethod(MyLinkMovementMethod.getInstance(handler, MyImageSpan.class));
     }
 
-    // make links and image work
+    /*
+    make links and image work
+     */
     Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             int what = msg.what;
@@ -368,13 +360,23 @@ public class EditTextManager {
                 for (Object span : spans) {
                     if (span instanceof MyImageSpan) {
                         MyLog.log("点击了图片：" + ((MyImageSpan) span).getUri());
-                        //处理自己的逻辑
+                        String filePath = String.valueOf(((MyImageSpan) span).getUri());
+                        File file = new File(filePath);
+                        Uri uri = Uri.fromFile(file);
+                        onMediaTouchListener.onMediaTouch(uri);
+                        MyLog.log("uri = " + uri.toString());
                     }
                 }
             }
         }
     };
 
+    /**
+     * 从传入的内容中解析出图像／视频文件
+     *
+     * @param str note content
+     * @return resource Strings
+     */
     public List<String> matchMediaResources(String str) {
         List<String> resourceStrs = new ArrayList<>();
         String regex = "/(storage|mnt)/.{0,15}/Android/data/cn\\.githan\\.yunnote/files/media/.{0,25}\\.(jpg|mp4)";
@@ -386,22 +388,35 @@ public class EditTextManager {
             MyLog.log("matcher str : " + resourcePath + " ; start = " + m.start() + "; end = " + m.end());
             if (checkFileExist(resourcePath)) {
                 displayResource(resourcePath, m.start(), m.end());
-            }else {
-                MyLog.log("resource show failed : "+resourcePath);
+            } else {
+                MyLog.log("resource show failed : " + resourcePath);
                 MyToast.show(context, context.getString(R.string.info_show_media_failed));
             }
         }
         return resourceStrs;
     }
 
-    public boolean checkFileExist(String filePath){
+    /**
+     * check if file existed
+     *
+     * @param filePath file path
+     * @return boolean
+     */
+    public boolean checkFileExist(String filePath) {
         File file = new File(filePath);
-        if (file.exists()){
+        if (file.exists()) {
             return true;
         }
         return false;
     }
 
+    /**
+     * 处理editText的内容，使显示图片／视频
+     *
+     * @param resource 需要替换为SpannableString的str
+     * @param start    start index
+     * @param end      end index
+     */
     public void displayResource(String resource, int start, int end) {
         SpannableString ss = new SpannableString(resource);
         Editable editable = editText.getEditableText();
@@ -416,12 +431,19 @@ public class EditTextManager {
             MyImageSpan mis = new MyImageSpan(context, bitmap, Uri.parse(resource));
             ss.setSpan(mis, 0, ss.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             editable.replace(start, end, ss);
+            editText.setMovementMethod(MyLinkMovementMethod.getInstance(handler, MyImageSpan.class));
         } else {
             editable.replace(start, end, "");
             MyLog.log("can't show image");
         }
     }
 
+    /**
+     * 返回media文件夹目录下该note的所有media资源文件
+     *
+     * @param noteId note id
+     * @return files of medias
+     */
     public List<File> getMediaFiles(int noteId) {
         MyLog.log("get Media Files from note : " + noteId);
         File mediaRoot = new File(mediaRootPath);
@@ -438,6 +460,12 @@ public class EditTextManager {
         return fileList;
     }
 
+    /**
+     * 对比检查note content & media文件夹目录下的资源，删除多余的media文件
+     *
+     * @param noteId  note id
+     * @param content note content
+     */
     public void updateMediaFiles(int noteId, String content) {
         //1,获取media文件夹里的所有文件名
         //2,获取edittext 里的内容，找到media的uri?定义一个List？
@@ -455,7 +483,12 @@ public class EditTextManager {
         deleteMediaFiles(toRemoveFiles);
     }
 
-
+    /**
+     * 从传入的内容中解析出media文件列表
+     *
+     * @param str String
+     * @return List<String>
+     */
     public List<String> getMatchResources(String str) {
         List<String> resourceStrs = new ArrayList<>();
         String regex = "/(storage|mnt)/.{0,15}/Android/data/cn\\.githan\\.yunnote/files/media/.{0,25}\\.(jpg|mp4)";
@@ -469,6 +502,11 @@ public class EditTextManager {
         return resourceStrs;
     }
 
+    /**
+     * 删除media文件
+     *
+     * @param mediaFiles list of media files
+     */
     private void deleteMediaFiles(List<File> mediaFiles) {
         for (int i = 0; i < mediaFiles.size(); i++) {
             File file = mediaFiles.get(i);
@@ -479,6 +517,13 @@ public class EditTextManager {
         }
     }
 
+    /**
+     * 检查file 是否包含在List<String>里面
+     *
+     * @param file   file
+     * @param uriStr List<String>
+     * @return boolean
+     */
     public boolean contains(File file, List<String> uriStr) {
         for (int i = 0; i < uriStr.size(); i++) {
             if (uriStr.get(i).equals(file.toString())) {
@@ -488,4 +533,28 @@ public class EditTextManager {
         return false;
     }
 
+
+    public int getEtWidth() {
+        return etWidth;
+    }
+
+    public void setEtWidth(int etWidth) {
+        this.etWidth = etWidth;
+    }
+
+    public int getEtHeight() {
+        return etHeight;
+    }
+
+    public void setEtHeight(int etHeight) {
+        this.etHeight = etHeight;
+    }
+
+    public void setOnMediaTouchListener(OnMediaTouchListener onMediaTouchListener) {
+        this.onMediaTouchListener = onMediaTouchListener;
+    }
+
+    public interface OnMediaTouchListener {
+        void onMediaTouch(Uri uri);
+    }
 }

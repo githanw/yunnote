@@ -34,6 +34,7 @@
     <string name="info_show_media_failed">有图片/视频未能显示</string>
     <string name="info_sync_succeed">同步成功</string>
     <string name="toast_info_network_unavaliable">网络不可用</string>
+    <string name="info_sync_failed">同步失败</string>
 
 
 </resources>

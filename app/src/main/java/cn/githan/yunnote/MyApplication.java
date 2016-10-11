@@ -2,12 +2,12 @@ package cn.githan.yunnote;
 
 import android.app.Application;
 
+import cn.githan.yunnote.Constants.Constant;
 import cn.githan.yunnote.Managers.EditTextManager;
 import cn.githan.yunnote.Managers.NoteManager;
 import cn.githan.yunnote.Managers.NoteSyncManager;
 import cn.githan.yunnote.Managers.SQLiteManager;
 import cn.githan.yunnote.Managers.UserManager;
-import cn.githan.yunnote.Constants.Constant;
 import cn.githan.yunnote.Utils.MySharePref;
 
 /**
@@ -19,8 +19,6 @@ public class MyApplication extends Application {
     private UserManager userManager;
     private NoteSyncManager noteSyncManager;
     private SQLiteManager sqLiteManager;
-    private EditTextManager editTextManager;
-
 
     @Override
     public void onCreate() {
@@ -34,6 +32,7 @@ public class MyApplication extends Application {
 
     /**
      * NoteManager instance
+     *
      * @return NoteManager instance
      */
     public NoteManager getNoteManager() {
@@ -45,10 +44,11 @@ public class MyApplication extends Application {
 
     /**
      * UserManager instance
+     *
      * @return UserManager instance
      */
-    public UserManager getUserManager(){
-        if (userManager==null){
+    public UserManager getUserManager() {
+        if (userManager == null) {
             userManager = new UserManager(this);
         }
         return userManager;
@@ -56,21 +56,23 @@ public class MyApplication extends Application {
 
     /**
      * NoteSyncManager instance
+     *
      * @return NoteSyncManager instance
      */
-    public NoteSyncManager getNoteSyncManager(){
-        if (noteSyncManager==null){
-            noteSyncManager = new NoteSyncManager(this,getUserManager());
+    public NoteSyncManager getNoteSyncManager() {
+        if (noteSyncManager == null) {
+            noteSyncManager = new NoteSyncManager(this, getUserManager());
         }
         return noteSyncManager;
     }
 
     /**
      * SQLiteManager instance
+     *
      * @return SQLiteManager instance
      */
-    public SQLiteManager getSqLiteManager(){
-        if (sqLiteManager==null){
+    public SQLiteManager getSqLiteManager() {
+        if (sqLiteManager == null) {
             sqLiteManager = new SQLiteManager(this);
         }
         return sqLiteManager;
@@ -79,7 +81,7 @@ public class MyApplication extends Application {
     /**
      * clear user info when application destroyed.
      */
-    public void clearUserInfo(){
+    public void clearUserInfo() {
         MySharePref sp = new MySharePref(this);
         boolean b = sp.getBoolean(Constant.SP_SAVEPASSWD);
         if (!b) {
@@ -92,11 +94,6 @@ public class MyApplication extends Application {
 
     public String getUsername() {
         return getUserManager().getUsername();
-    }
-
-
-    public String getPassword() {
-        return getUserManager().getPassword();
     }
 
     @Override

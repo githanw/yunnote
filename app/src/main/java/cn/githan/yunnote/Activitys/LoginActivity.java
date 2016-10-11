@@ -21,15 +21,13 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         init();
-
     }
 
     /**
      * init views
      */
-    public void init(){
+    public void init() {
         toolBar = new AppToolBar(this, (Toolbar) findViewById(R.id.toolbar));
         toolBar.setNavigationIconAsBack();
         toolBar.setOnClickNavigationIconListener(this);
@@ -40,9 +38,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.btn_user_log_out:
                 getUserManager().setUserLogOut();
+                getSQLiteManager().clearQueue();
                 finish();
                 break;
             case -1:

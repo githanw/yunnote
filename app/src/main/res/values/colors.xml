@@ -14,7 +14,7 @@
     <color name="colorFABNor">#21CD6F</color>
     <color name="colorFABSel">#3287F3</color>
     <color name="colorAlphaToolBar">#5898E9</color>
-    <color name="listview_color">#EEEEEE</color>
+    <color name="listview_color">#FAFAFA</color>
 
 
 </resources>

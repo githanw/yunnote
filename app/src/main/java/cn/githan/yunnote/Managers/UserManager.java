@@ -4,9 +4,10 @@ import android.content.Context;
 
 import org.json.JSONObject;
 
-import cn.githan.yunnote.Controllers.NetWorkAsyncTask;
 import cn.githan.yunnote.Constants.Constant;
+import cn.githan.yunnote.Controllers.NetWorkAsyncTask;
 import cn.githan.yunnote.Utils.MyJsonParser;
+import cn.githan.yunnote.Utils.MyLog;
 import cn.githan.yunnote.Utils.MySharePref;
 
 
@@ -38,6 +39,7 @@ public class UserManager implements NetWorkAsyncTask.NetWorkResultListener {
     public void startConnectServer(String requestCode, String user, String passwd, JsonDataReceivedListener listener) {
         jsonDataReceivedListener = listener;
         String url = Constant.ADDRESS + requestCode + ".php";
+        MyLog.log(url);
         JSONObject object = MyJsonParser.packageJsonObject(requestCode, user, passwd);
         String msg = MyJsonParser.jsonObjectToStr(object);
         new NetWorkAsyncTask(this).execute(url, msg);

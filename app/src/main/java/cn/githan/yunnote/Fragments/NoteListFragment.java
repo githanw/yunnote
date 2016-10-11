@@ -20,29 +20,27 @@ import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import cn.githan.yunnote.Utils.MyLog;
-import cn.githan.yunnote.Utils.MyUtils;
-import cn.githan.yunnote.Widgets.AppToolBar;
 import cn.githan.yunnote.Activitys.LoginActivity;
 import cn.githan.yunnote.Activitys.MainActivity;
 import cn.githan.yunnote.Activitys.NoteContentActivity;
 import cn.githan.yunnote.Activitys.UnLoginActivity;
-import cn.githan.yunnote.MyApplication;
 import cn.githan.yunnote.Adapters.NoteListViewAdapter;
+import cn.githan.yunnote.Constants.Constant;
 import cn.githan.yunnote.Managers.NoteManager;
 import cn.githan.yunnote.Managers.NoteSyncManager;
-import cn.githan.yunnote.Constants.Constant;
 import cn.githan.yunnote.Models.Note;
+import cn.githan.yunnote.MyApplication;
 import cn.githan.yunnote.R;
+import cn.githan.yunnote.Utils.MyLog;
 import cn.githan.yunnote.Utils.MyToast;
-
-import static cn.githan.yunnote.Managers.NoteSyncManager.SYNC_SUCCEED;
+import cn.githan.yunnote.Utils.MyUtils;
+import cn.githan.yunnote.Widgets.AppToolBar;
 
 
 /**
  * Created by BW on 16/8/13.
  */
-public class NoteListFragment extends Fragment implements Toolbar.OnMenuItemClickListener, View.OnClickListener, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, NoteSyncManager.OnSyncSucceedListener {
+public class NoteListFragment extends Fragment implements Toolbar.OnMenuItemClickListener, View.OnClickListener, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
 
     private AppToolBar toolBar;
@@ -78,6 +76,7 @@ public class NoteListFragment extends Fragment implements Toolbar.OnMenuItemClic
         listView.setOnItemClickListener(this);
         listView.setOnItemLongClickListener(this);
         ra = new RotateAnim();
+
         return v;
 
     }
@@ -153,10 +152,22 @@ public class NoteListFragment extends Fragment implements Toolbar.OnMenuItemClic
             case R.id.menu_item_refresh:
                 if (MyUtils.isNetworkAvaliable(getContext())) {
                     if (myApp.getUserManager().isUserLogin()) {
-                        ra.bindView(view);
-                        ra.start();
-                        //start sync data
-                        myApp.getNoteSyncManager().startSyncData(myApp.getUsername(), this);
+                        if (!ra.isAnimating) {
+                            ra.bindView(view);
+                            ra.start();
+                            /*
+                            start sync data
+                             */
+                            myApp.getNoteSyncManager().startSync(myApp.getUsername(), new NoteSyncManager.OnSyncResultListener() {
+                                @Override
+                                public void onNoteSyncResult(int resultCode, String content) {
+                                    MyLog.log("NoteListFragment >>> " + content);
+                                    Message m = new Message();
+                                    m.what = resultCode;
+                                    handler.sendMessage(m);
+                                }
+                            });
+                        }
                     } else {
                         startUnLoginActivity();
                     }
@@ -280,16 +291,6 @@ public class NoteListFragment extends Fragment implements Toolbar.OnMenuItemClic
         super.onPause();
     }
 
-    @Override
-    public void onNoteSyncSucceed(String data) {
-        if (data.equals(SYNC_SUCCEED)) {
-            MyLog.log("onNoteSyncSucceed. data = " + data);
-            Message m = new Message();
-            m.what = 1;
-            handler.sendMessage(m);
-        }
-    }
-
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -297,6 +298,9 @@ public class NoteListFragment extends Fragment implements Toolbar.OnMenuItemClic
                 MyToast.show(getContext(), getContext().getString(R.string.info_sync_succeed));
                 myApp.getNoteManager().refreshNoteList();
                 adapter.notifyDataSetChanged();
+                ra.stop();
+            } else if (msg.what == 0) {
+                MyToast.show(getContext(), getContext().getString(R.string.info_sync_failed));
                 ra.stop();
             }
             super.handleMessage(msg);

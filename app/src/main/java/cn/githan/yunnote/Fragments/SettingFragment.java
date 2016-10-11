@@ -10,11 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import cn.githan.yunnote.Widgets.AppToolBar;
 import cn.githan.yunnote.Activitys.MainActivity;
 import cn.githan.yunnote.Activitys.UnLoginActivity;
 import cn.githan.yunnote.MyApplication;
 import cn.githan.yunnote.R;
+import cn.githan.yunnote.Widgets.AppToolBar;
 
 
 /**
@@ -32,17 +32,18 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
         View v = inflater.inflate(R.layout.fragment_settting, null);
         mainActivity = (MainActivity) getActivity();
         myApp = mainActivity.getApp();
-        //initial custom toolbar
+        //init custom toolbar
         initToolbar(v);
         return v;
     }
 
     /**
      * init tool bar
+     *
      * @param v view
      */
-    public void initToolbar(View v){
-        toolbar = new AppToolBar(mainActivity,(Toolbar) v.findViewById(R.id.toolbar));
+    public void initToolbar(View v) {
+        toolbar = new AppToolBar(mainActivity, (Toolbar) v.findViewById(R.id.toolbar));
         toolbar.setTitle(R.string.settings);
         toolbar.setNavigationIconAsLogin();
         toolbar.setDisplayEditorButton(false);

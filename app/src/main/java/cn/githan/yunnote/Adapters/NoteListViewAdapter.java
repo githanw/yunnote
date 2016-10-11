@@ -60,8 +60,9 @@ public class NoteListViewAdapter extends BaseAdapter {
 
     /**
      * base on boolean isEditorMode, return different layout of view
+     *
      * @param view index of view
-     * @param i index
+     * @param i    index
      * @return view
      */
     public View initView(View view, int i) {
@@ -105,6 +106,7 @@ public class NoteListViewAdapter extends BaseAdapter {
     /**
      * if data was uploaded to server, return text "已同步"
      * otherwise, return text "未同步"
+     *
      * @param i note list index
      * @return String
      */

@@ -10,8 +10,9 @@ public class MyToast {
 
     /**
      * show toast
+     *
      * @param context context
-     * @param string string of toast
+     * @param string  string of toast
      */
     public static void show(Context context, String string) {
         Toast toast = Toast.makeText(context, string, Toast.LENGTH_SHORT);

@@ -9,17 +9,18 @@ import org.json.JSONObject;
 public class MyJsonParser {
     /**
      * package json object
+     *
      * @param type
      * @param username
      * @param password
      * @return json object
      */
-    public static JSONObject packageJsonObject(String type, String username,String password) {
+    public static JSONObject packageJsonObject(String type, String username, String password) {
         JSONObject object = new JSONObject();
         try {
             object.put("requestcode", type);
             object.put("username", username);
-            object.put("password",password);
+            object.put("password", password);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -28,6 +29,7 @@ public class MyJsonParser {
 
     /**
      * package json object
+     *
      * @param type
      * @param username
      * @return json object
@@ -45,6 +47,7 @@ public class MyJsonParser {
 
     /**
      * package json object to string
+     *
      * @param object json object
      * @return string
      */

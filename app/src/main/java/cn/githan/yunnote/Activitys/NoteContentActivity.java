@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import java.io.File;
 
 import cn.githan.yunnote.Constants.Constant;
+import cn.githan.yunnote.Managers.EditTextManager;
 import cn.githan.yunnote.Models.Note;
 import cn.githan.yunnote.R;
 import cn.githan.yunnote.Utils.MyLog;
@@ -24,7 +25,7 @@ import cn.githan.yunnote.Widgets.SuperEditText;
 /**
  * Created by BW on 16/8/12.
  */
-public class NoteContentActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
+public class NoteContentActivity extends BaseActivity implements View.OnClickListener, TextWatcher, EditTextManager.OnMediaTouchListener {
 
     public static final int REQUEST_CODE_ADD_NOTE = 1;
     public static final int REQUEST_CODE_EDIT_NOTE = 2;
@@ -71,6 +72,7 @@ public class NoteContentActivity extends BaseActivity implements View.OnClickLis
         ibInsertPic.setOnClickListener(this);
         ibTakePic.setOnClickListener(this);
         ibRecordVideo.setOnClickListener(this);
+        etContent.getEditTextManager().setOnMediaTouchListener(this);
     }
 
     /**
@@ -107,7 +109,7 @@ public class NoteContentActivity extends BaseActivity implements View.OnClickLis
                     note.setnTime(MyUtils.getSystemTime());
                 }
                 etContent.updateMediaFiles(noteId);
-                MyLog.log("etContent : "+ etContent.getText().toString());
+                MyLog.log("etContent : " + etContent.getText().toString());
                 Intent intent = new Intent();
                 intent.putExtra(Constant.NOTE, note);
                 setResult(NoteContentActivity.RESULT_CODE_FINISH, intent);
@@ -187,5 +189,19 @@ public class NoteContentActivity extends BaseActivity implements View.OnClickLis
     public void onBackPressed() {
         setResult(NoteContentActivity.RESULT_CODE_CANCEL);
         super.onBackPressed();
+    }
+
+    @Override
+    public void onMediaTouch(Uri uri) {
+        String type;
+        String str = uri.toString();
+        if (str.endsWith(".mp4")) {
+            type = "video/mp4";
+        } else {
+            type = "image/*";
+        }
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(uri, type);
+        startActivity(intent);
     }
 }

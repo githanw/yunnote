@@ -1,6 +1,5 @@
 package cn.githan.yunnote.Utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -15,49 +14,53 @@ public class MySharePref {
 
     public MySharePref(Context context) {
         this.context = context;
-        sp = context.getSharedPreferences("note",context.MODE_PRIVATE);
+        sp = context.getSharedPreferences("note", context.MODE_PRIVATE);
         editor = sp.edit();
     }
 
     /**
      * put string to share preference
-     * @param key string key
+     *
+     * @param key   string key
      * @param value string content
      */
-    public static void putString(String key,String value){
-        editor.putString(key,value);
+    public static void putString(String key, String value) {
+        editor.putString(key, value);
 
     }
 
     /**
      * get string from share preference
+     *
      * @param key string key
      * @return string content
      */
-    public String getString(String key){
-        return sp.getString(key,null);
+    public String getString(String key) {
+        return sp.getString(key, null);
     }
 
-    public void putBoolean(String key,boolean value){
-        editor.putBoolean(key,value);
+    public void putBoolean(String key, boolean value) {
+        editor.putBoolean(key, value);
 
     }
 
     /**
      * get boolean from share preference
+     *
      * @param key string key
      * @return boolean content
      */
-    public boolean getBoolean(String key){
-        return sp.getBoolean(key,false);
+    public boolean getBoolean(String key) {
+        return sp.getBoolean(key, false);
     }
 
     /**
      * commit share preference
+     *
      * @return boolean
      */
-    public boolean commit(){
-        if (editor.commit()){
+    public boolean commit() {
+        if (editor.commit()) {
             editor.clear();
             return true;
         }

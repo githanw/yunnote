@@ -16,9 +16,9 @@ import cn.githan.yunnote.R;
 public class MainActivity extends BaseActivity implements TabHost.OnTabChangeListener {
 
     private FragmentTabHost tabHost;
-    private int tabSpecTitle[] = {R.string.notes,R.string.settings};
-    private int tabSpecImg[] = {R.drawable.docker_tab_note_selector,R.drawable.docker_tab_setting_selector};
-    private Class fragments[] = {NoteListFragment.class,SettingFragment.class};
+    private int tabSpecTitle[] = {R.string.notes, R.string.settings};
+    private int tabSpecImg[] = {R.drawable.docker_tab_note_selector, R.drawable.docker_tab_setting_selector};
+    private Class fragments[] = {NoteListFragment.class, SettingFragment.class};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,12 +30,12 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
     /**
      * init views
      */
-    public void init(){
+    public void init() {
         //initial FragmentTabHost
         tabHost = (FragmentTabHost) findViewById(R.id.tab_host);
         tabHost.setup(this, getSupportFragmentManager(), R.id.fragment_container);
         for (int i = 0; i < fragments.length; i++) {
-            tabHost.addTab(tabHost.newTabSpec(getString(tabSpecTitle[i])).setIndicator(getTabSpecView(i)),fragments[i],null);
+            tabHost.addTab(tabHost.newTabSpec(getString(tabSpecTitle[i])).setIndicator(getTabSpecView(i)), fragments[i], null);
         }
         tabHost.setOnTabChangedListener(this);
         changeTabTextColor(0);
@@ -44,11 +44,12 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
     /**
      * get every view of tab
      * it is a view group contains ImageView & TextView which is from item_tab_spec.xml
+     *
      * @param i view's current index
      * @return view of tab
      */
-    private View getTabSpecView(int i){
-        View v = LayoutInflater.from(this).inflate(R.layout.item_tab_spec,null);
+    private View getTabSpecView(int i) {
+        View v = LayoutInflater.from(this).inflate(R.layout.item_tab_spec, null);
         ImageView iv = (ImageView) v.findViewById(R.id.tab_spec_imageview);
         TextView tv = (TextView) v.findViewById(R.id.tab_spec_textview);
         iv.setBackgroundResource(tabSpecImg[i]);
@@ -65,9 +66,10 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
 
     /**
      * change the color of tab's title-text which is been selected.
+     *
      * @param position index
      */
-    public void changeTabTextColor(int position){
+    public void changeTabTextColor(int position) {
         clearTabTextcolor();
         View v = tabHost.getTabWidget().getChildAt(position);
         TextView tv = (TextView) v.findViewById(R.id.tab_spec_textview);
@@ -77,7 +79,7 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
     /**
      * set all tab's title-text to default color.
      */
-    public void clearTabTextcolor(){
+    public void clearTabTextcolor() {
         for (int i = 0; i < tabHost.getTabWidget().getChildCount(); i++) {
             View v = tabHost.getTabWidget().getChildAt(i);
             TextView tv = (TextView) v.findViewById(R.id.tab_spec_textview);
@@ -88,10 +90,11 @@ public class MainActivity extends BaseActivity implements TabHost.OnTabChangeLis
 
     /**
      * set tab host visibility
+     *
      * @param visibility boolean
      */
-    public void setTabHostVisibility(int visibility){
-        if (tabHost!=null){
+    public void setTabHostVisibility(int visibility) {
+        if (tabHost != null) {
             tabHost.setVisibility(visibility);
         }
     }

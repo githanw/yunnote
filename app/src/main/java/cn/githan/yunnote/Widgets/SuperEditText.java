@@ -1,6 +1,7 @@
 package cn.githan.yunnote.Widgets;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.net.Uri;
 import android.text.Editable;
 import android.util.AttributeSet;
@@ -20,16 +21,10 @@ public class SuperEditText extends EditText {
     private Context context;
     private EditTextManager editTextManager;
 
-
-
     //4.0
     ///mnt/sdcard/Android/data/cn.githan.yunnote/files/media/1691161538FFFF30985358.jpg
-
     //4.0++
     ///storage/emulated/0/Android/data/cn.githan.yunnote/files/media/0FFFF1017373148.jpg
-
-    // /storage/sdcard0/Android/data/cn.githan.yunnote/files/media/74997378FFFF1086190127.jpg
-
 
     public SuperEditText(Context context) {
         super(context);
@@ -49,7 +44,6 @@ public class SuperEditText extends EditText {
         getEditTextManager();
     }
 
-
     /**
      * get instance of EditTextManager
      *
@@ -57,7 +51,7 @@ public class SuperEditText extends EditText {
      */
     public EditTextManager getEditTextManager() {
         if (editTextManager == null) {
-            editTextManager = new EditTextManager(context,this);
+            editTextManager = new EditTextManager(context, this);
         }
         return editTextManager;
     }
@@ -91,9 +85,13 @@ public class SuperEditText extends EditText {
         }
     }
 
-
-    public void updateMediaFiles(int noteId){
-        editTextManager.updateMediaFiles(noteId,getText().toString());
+    /**
+     * update media files
+     *
+     * @param noteId note id
+     */
+    public void updateMediaFiles(int noteId) {
+        editTextManager.updateMediaFiles(noteId, getText().toString());
     }
 
     @Override
@@ -108,7 +106,14 @@ public class SuperEditText extends EditText {
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        editTextManager.setEtWidth(getWidth());
+        editTextManager.setEtHeight(getHeight());
         editTextManager.matchMediaResources(getText().toString());
         super.onLayout(changed, left, top, right, bottom);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
     }
 }
