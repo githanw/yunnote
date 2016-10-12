@@ -271,17 +271,19 @@ public class NoteListFragment extends Fragment implements Toolbar.OnMenuItemClic
         if (resultCode == NoteContentActivity.RESULT_CODE_CANCEL) {
             return;
         }
-        switch (requestCode) {
-            case NoteContentActivity.REQUEST_CODE_ADD_NOTE:
-                //add a new note
-                noteManager.addNote((Note) data.getSerializableExtra(Constant.NOTE));
-                adapter.notifyDataSetChanged();
-                break;
-            case NoteContentActivity.REQUEST_CODE_EDIT_NOTE:
-                //modify note
-                noteManager.modifyNote((Note) data.getSerializableExtra(Constant.NOTE));
-                adapter.notifyDataSetChanged();
-                break;
+        if (data != null) {
+            switch (requestCode) {
+                case NoteContentActivity.REQUEST_CODE_ADD_NOTE:
+                    //add a new note
+                    noteManager.addNote((Note) data.getSerializableExtra(Constant.NOTE));
+                    adapter.notifyDataSetChanged();
+                    break;
+                case NoteContentActivity.REQUEST_CODE_EDIT_NOTE:
+                    //modify note
+                    noteManager.modifyNote((Note) data.getSerializableExtra(Constant.NOTE));
+                    adapter.notifyDataSetChanged();
+                    break;
+            }
         }
     }
 

@@ -163,16 +163,19 @@ public class EditTextManager {
      * @return 指定大小的视频缩略图
      */
     public Bitmap getVideoThumbnail(String videoPath, int width, int height, int kind) {
-        Bitmap bitmap;
+        Bitmap bitmap = null;
         bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, kind);
-        MyLog.log("Video Thumbnail is created: w->" + bitmap.getWidth() + " h->" + bitmap.getHeight());
+        if (bitmap != null) {
+            MyLog.log("Video Thumbnail is created: w->" + bitmap.getWidth() + " h->" + bitmap.getHeight());
 
-        bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, bitmap.getHeight(), ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+            bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, bitmap.getHeight(), ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
 
-        //加上播放的水印
-        BitmapDrawable bd = (BitmapDrawable) context.getResources().getDrawable(R.drawable.water_mark_play);
-        Bitmap waterBitmap = bd.getBitmap();
-        bitmap = createBitmap(bitmap, waterBitmap);
+            //加上播放的水印
+            BitmapDrawable bd = (BitmapDrawable) context.getResources().getDrawable(R.drawable.water_mark_play);
+            Bitmap waterBitmap = bd.getBitmap();
+            bitmap = createBitmap(bitmap, waterBitmap);
+        }
+
         return bitmap;
     }
 
@@ -320,7 +323,9 @@ public class EditTextManager {
     public void insertFromVideoCapture(EditText et, Uri uri) {
         String path = decodeUriToFilePath(uri, VIDEO_CAPTURE);
         Bitmap bitmap = getBitmapFromFilePath(path, VIDEO_CAPTURE);
-        insertImageToEditText(et, bitmap, Uri.parse(path));
+        if (bitmap != null) {
+            insertImageToEditText(et, bitmap, Uri.parse(path));
+        }
     }
 
     /**

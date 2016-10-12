@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
@@ -39,6 +40,7 @@ public class NoteContentActivity extends BaseActivity implements View.OnClickLis
     private ImageButton ibInsertPic, ibTakePic, ibRecordVideo;
     private Uri resultImageUri, resultVideoUri;
     private int noteId;
+    private Button editBtn;
 
 
     @Override
@@ -52,6 +54,7 @@ public class NoteContentActivity extends BaseActivity implements View.OnClickLis
             noteId = note.getnId();
             etTitle.setText(note.getnTitle());
             etContent.setText(note.getnContent());
+            setEditMode(false);
         } else {
             noteId = MyUtils.getRandomNumber();
         }
@@ -83,8 +86,24 @@ public class NoteContentActivity extends BaseActivity implements View.OnClickLis
         toolBar.setOnClickFinishButtonListener(this);
         toolBar.setNavigationIconAsBack();
         toolBar.setOnClickNavigationIconListener(this);
+        editBtn = (Button) findViewById(R.id.menu_item_finish);
     }
 
+    public void setEditMode(boolean b){
+        if (b){
+            editBtn.setText(getString(R.string.menu_item_finish));
+            etTitle.setEnabled(true);
+            etContent.setFocusableInTouchMode(true);
+            etContent.setFocusable(true);
+            findViewById(R.id.layout_media_button).setVisibility(View.VISIBLE);
+        }else {
+            editBtn.setText(getString(R.string.menu_item_edit));
+            etTitle.setEnabled(false);
+            etContent.setFocusable(false);
+            etContent.setFocusableInTouchMode(false);
+            findViewById(R.id.layout_media_button).setVisibility(View.GONE);
+        }
+    }
 
     @Override
     public void onClick(View view) {
@@ -95,25 +114,30 @@ public class NoteContentActivity extends BaseActivity implements View.OnClickLis
                 finish();
                 break;
             case R.id.menu_item_finish:
-                if (note == null) {
-                    note = new Note(
-                            noteId,
-                            etTitle.getText().toString(),
-                            etContent.getText().toString(),
-                            MyUtils.getSystemTime(),
-                            0);
-                } else {
-                    note.setnTitle(etTitle.getText().toString());
-                    note.setnContent(etContent.getText().toString());
-                    note.setnSync(0);
-                    note.setnTime(MyUtils.getSystemTime());
+                if (editBtn.getText().toString().equals(getString(R.string.menu_item_finish))){
+                    if (note == null) {
+                        note = new Note(
+                                noteId,
+                                etTitle.getText().toString(),
+                                etContent.getText().toString(),
+                                MyUtils.getSystemTime(),
+                                0);
+                    } else {
+                        note.setnTitle(etTitle.getText().toString());
+                        note.setnContent(etContent.getText().toString());
+                        note.setnSync(0);
+                        note.setnTime(MyUtils.getSystemTime());
+                    }
+                    etContent.updateMediaFiles(noteId);
+                    MyLog.log("etContent : " + etContent.getText().toString());
+                    Intent intent = new Intent();
+                    intent.putExtra(Constant.NOTE, note);
+                    setResult(NoteContentActivity.RESULT_CODE_FINISH, intent);
+                    finish();
+                } else if (editBtn.getText().toString().equals(getString(R.string.menu_item_edit))) {
+                    setEditMode(true);
                 }
-                etContent.updateMediaFiles(noteId);
-                MyLog.log("etContent : " + etContent.getText().toString());
-                Intent intent = new Intent();
-                intent.putExtra(Constant.NOTE, note);
-                setResult(NoteContentActivity.RESULT_CODE_FINISH, intent);
-                finish();
+
                 break;
             case R.id.image_button_insert_pic:
                 /*
@@ -204,4 +228,6 @@ public class NoteContentActivity extends BaseActivity implements View.OnClickLis
         intent.setDataAndType(uri, type);
         startActivity(intent);
     }
+
+
 }
