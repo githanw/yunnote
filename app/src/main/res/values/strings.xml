@@ -21,7 +21,7 @@
     <string name="please_login">请登录</string>
     <string name="settings">设置</string>
     <string name="title_activity_main2">Main2Activity</string>
-    <string name="menu_item_finish">完成</string>
+    <string name="menu_item_finish">保存</string>
     <string name="menu_item_edit">编辑</string>
     <string name="dialog_message">你确定要删除吗?</string>
     <string name="dialog_sure">确定</string>

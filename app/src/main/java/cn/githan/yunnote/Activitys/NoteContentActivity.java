@@ -1,7 +1,11 @@
 package cn.githan.yunnote.Activitys;
 
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.widget.Toolbar;
@@ -19,6 +23,7 @@ import cn.githan.yunnote.Managers.EditTextManager;
 import cn.githan.yunnote.Models.Note;
 import cn.githan.yunnote.R;
 import cn.githan.yunnote.Utils.MyLog;
+import cn.githan.yunnote.Utils.MyToast;
 import cn.githan.yunnote.Utils.MyUtils;
 import cn.githan.yunnote.Widgets.AppToolBar;
 import cn.githan.yunnote.Widgets.SuperEditText;
@@ -89,14 +94,14 @@ public class NoteContentActivity extends BaseActivity implements View.OnClickLis
         editBtn = (Button) findViewById(R.id.menu_item_finish);
     }
 
-    public void setEditMode(boolean b){
-        if (b){
+    public void setEditMode(boolean b) {
+        if (b) {
             editBtn.setText(getString(R.string.menu_item_finish));
             etTitle.setEnabled(true);
             etContent.setFocusableInTouchMode(true);
             etContent.setFocusable(true);
             findViewById(R.id.layout_media_button).setVisibility(View.VISIBLE);
-        }else {
+        } else {
             editBtn.setText(getString(R.string.menu_item_edit));
             etTitle.setEnabled(false);
             etContent.setFocusable(false);
@@ -114,7 +119,7 @@ public class NoteContentActivity extends BaseActivity implements View.OnClickLis
                 finish();
                 break;
             case R.id.menu_item_finish:
-                if (editBtn.getText().toString().equals(getString(R.string.menu_item_finish))){
+                if (editBtn.getText().toString().equals(getString(R.string.menu_item_finish))) {
                     if (note == null) {
                         note = new Note(
                                 noteId,
@@ -163,12 +168,43 @@ public class NoteContentActivity extends BaseActivity implements View.OnClickLis
                 /*
                 start video capture
                  */
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+                    MyToast.show(this, "请使用android 5.0 及以下的系统测试此功能");
+                    return;
+                }
                 Intent intentVideoCapture = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
                 File outputVideoFile = etContent.getEditTextManager().createNewVideoFile(String.valueOf(noteId));
                 resultVideoUri = Uri.fromFile(outputVideoFile);
                 intentVideoCapture.putExtra(MediaStore.EXTRA_OUTPUT, resultVideoUri);
                 startActivityForResult(intentVideoCapture, SuperEditText.VIDEO_CAPTURE);
                 break;
+        }
+    }
+
+    /**
+     * Gets the content:// URI from the given corresponding path to a file
+     *
+     * @param context
+     * @param imageFile
+     * @return content Uri
+     */
+    public static Uri getVideoContentUri(Context context, java.io.File imageFile) {
+        String filePath = imageFile.getAbsolutePath();
+        Cursor cursor = context.getContentResolver().query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Video.Media._ID}, MediaStore.Video.Media.DATA + "=? ",
+                new String[]{filePath}, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            int id = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
+            Uri baseUri = Uri.parse("content://media/external/video/media/");
+            return Uri.withAppendedPath(baseUri, "" + id);
+        } else {
+            if (imageFile.exists()) {
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Images.Media.DATA, filePath);
+                return context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            } else {
+                return null;
+            }
         }
     }
 
